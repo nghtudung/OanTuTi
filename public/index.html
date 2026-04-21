@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Oẳn tù tì vjp pro</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Oẳn tù tì vjp pro</h1>
+
+            <div class="section">
+                <h3>Join Room</h3>
+                <input id="name" placeholder="Nickname" />
+                <input id="roomId" placeholder="Room ID" />
+                <button onclick="joinRoom()">Join Room</button>
+            </div>
+
+            <div class="section">
+                <h3>Room List</h3>
+                <ul id="rooms"></ul>
+            </div>
+
+            <div class="section" id="game" style="display: none">
+                <h3>Game Status</h3>
+                <p id="status"></p>
+                <p id="timer"></p>
+
+                <div class="row">
+                    <div class="col">
+                        <h4>You <span id="myStatus">💬</span></h4>
+                        <p id="bullets"></p>
+                        <p id="shieldStreak"></p>
+                    </div>
+
+                    <div class="col">
+                        <h4>Opponent <span id="enemyStatus">💬</span></h4>
+                        <p id="enemyBullets"></p>
+                        <p id="enemyShieldStreak"></p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px">
+                    <button id="shootBtn" onclick="sendAction('shoot')">
+                        Shoot
+                    </button>
+                    <button id="shieldBtn" onclick="sendAction('shield')">
+                        Shield
+                    </button>
+                    <button id="reloadBtn" onclick="sendAction('reload')">
+                        Reload
+                    </button>
+                    <button onclick="restartGame()">Restart</button>
+                </div>
+
+                <div style="margin-top: 20px">
+                    <h4>Log</h4>
+                    <p id="log"></p>
+                    <p id="result"></p>
+                </div>
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>

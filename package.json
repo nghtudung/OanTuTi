@@ -1,0 +1,24 @@
+{
+  "name": "oantuti",
+  "version": "1.0.0",
+  "description": "Oẳn tù tì nâng cấp",
+  "homepage": "https://github.com/nghtudung/OanTuTi#readme",
+  "bugs": {
+    "url": "https://github.com/nghtudung/OanTuTi/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nghtudung/OanTuTi.git"
+  },
+  "license": "ISC",
+  "author": "GieJackTM",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}
