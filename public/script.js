@@ -51,12 +51,9 @@ socket.on("state", (room) => {
     const enemy = room.players.find((p) => p.id !== myId);
 
     document.getElementById("status").innerText =
-        room.players.length < 2
-            ? "Waiting for opponent..."
-            : "Battle started";
+        room.players.length < 2 ? "Waiting for opponent..." : "Battle started";
 
-    document.getElementById("timer").innerText =
-        "Time left: " + room.timer;
+    document.getElementById("timer").innerText = "Time left: " + room.timer;
 
     document.getElementById("bullets").innerText = me
         ? `Bullets: ${me.bullets}`
@@ -75,11 +72,15 @@ socket.on("state", (room) => {
         : "";
 
     document.getElementById("myStatus").innerText = me
-        ? (me.action ? "✅" : "💬")
+        ? me.action
+            ? "✅"
+            : "💬"
         : "💬";
 
     document.getElementById("enemyStatus").innerText = enemy
-        ? (enemy.action ? "✅" : "💬")
+        ? enemy.action
+            ? "✅"
+            : "💬"
         : "💬";
 
     document.getElementById("log").innerText = room.log;
@@ -92,8 +93,10 @@ socket.on("state", (room) => {
 
     if (me) {
         if (me.bullets < 1) document.getElementById("shootBtn").disabled = true;
-        if (me.shieldStreak >= MAX_SHIELD_STREAK) document.getElementById("shieldBtn").disabled = true;
-        if (me.bullets >= MAX_BULLETS) document.getElementById("reloadBtn").disabled = true;
+        if (me.shieldStreak >= MAX_SHIELD_STREAK)
+            document.getElementById("shieldBtn").disabled = true;
+        if (me.bullets >= MAX_BULLETS)
+            document.getElementById("reloadBtn").disabled = true;
     }
 
     if (me && me.dead) {
