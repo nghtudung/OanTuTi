@@ -17,19 +17,20 @@ function joinRoom(roomId = null) {
     const name = nameInput.value.trim() || "Player";
     
     if (!name) {
-        alert("Please enter a nickname");
+        alert("Nhập tên trước đã");
         return;
     }
     
     currentRoom = roomId || document.getElementById("roomId").value;
     if (!currentRoom) {
-        alert("Please enter or select a room ID");
+        alert("Nhập hoặc chọn ID phòng");
         return;
     }
     
     myName = name;
     socket.emit("joinRoom", { roomId: currentRoom, name });
     document.getElementById("game").style.display = "block";
+    document.getElementById("joinRoomBtn").disabled = true;
 }
 
 function sendAction(action) {
@@ -48,7 +49,7 @@ function leaveRoom() {
         myName = "";
         enemyName = "";
         document.getElementById("game").style.display = "none";
-        // Re-render room list with buttons enabled
+        document.getElementById("joinRoomBtn").disabled = false;
         socket.emit("getRoomList");
     }
 }
@@ -82,10 +83,9 @@ socket.on("roomList", (rooms) => {
         roomInfo.innerText = `${room.id} (${room.players}/2)`;
         
         const joinBtn = document.createElement("button");
-        joinBtn.innerText = "Join";
+        joinBtn.innerText = "Vô";
         joinBtn.style.marginRight = "0";
         
-        // Disable join button if already in a room
         if (currentRoom) {
             joinBtn.disabled = true;
             joinBtn.style.opacity = "0.5";
@@ -95,7 +95,7 @@ socket.on("roomList", (rooms) => {
         joinBtn.onclick = () => {
             const nameInput = document.getElementById("name");
             if (!nameInput.value.trim()) {
-                alert("Please enter a nickname first");
+                alert("Nhập tên trước đã");
                 nameInput.focus();
                 return;
             }
@@ -114,7 +114,6 @@ socket.on("state", (room) => {
     const me = room.players.find((p) => p.id === myId);
     const enemy = room.players.find((p) => p.id !== myId);
 
-    // Update player names
     if (me) {
         myName = me.name;
         document.getElementById("myName").innerText = me.name;
@@ -125,24 +124,24 @@ socket.on("state", (room) => {
     }
 
     document.getElementById("status").innerText =
-        room.players.length < 2 ? "Waiting for opponent..." : "Battle started";
+        room.players.length < 2 ? "Chờ đối phương..." : "Game bắt đầu!";
 
-    document.getElementById("timer").innerText = "Time left: " + room.timer;
+    document.getElementById("timer").innerText = "Thời gian còn lại: " + room.timer;
 
     document.getElementById("bullets").innerText = me
-        ? `Bullets: ${me.bullets}`
+        ? `Đạn: ${me.bullets}`
         : "";
 
     document.getElementById("enemyBullets").innerText = enemy
-        ? `Bullets: ${enemy.bullets}`
+        ? `Đạn: ${enemy.bullets}`
         : "";
 
     document.getElementById("shieldStreak").innerText = me
-        ? `Shield Streak: ${me.shieldStreak}`
+        ? `Chuỗi khiên: ${me.shieldStreak}`
         : "";
 
     document.getElementById("enemyShieldStreak").innerText = enemy
-        ? `Shield Streak: ${enemy.shieldStreak}`
+        ? `Chuỗi khiên: ${enemy.shieldStreak}`
         : "";
 
     document.getElementById("myStatus").innerText = me
@@ -174,14 +173,14 @@ socket.on("state", (room) => {
     }
 
     if (me && me.dead) {
-        resultDiv.innerText = "You Lose!";
+        resultDiv.innerText = "Đừng đẻ trứng nhé!";
         resultDiv.classList.add("lose");
         resultDiv.style.display = "block";
         disableButtons(true);
     }
 
     if (enemy && enemy.dead) {
-        resultDiv.innerText = "You Win!";
+        resultDiv.innerText = "Booyah!";
         resultDiv.classList.add("win");
         resultDiv.style.display = "block";
         disableButtons(true);

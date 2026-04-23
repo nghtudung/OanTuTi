@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Oẳn tù tì vjp pro — Sport UI</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Orbitron:wght@500;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="style2.css" />
+    </head>
+    <body>
+        <div class="bg" aria-hidden="true">
+            <div class="bg__grid"></div>
+            <div class="bg__glow bg__glow--a"></div>
+            <div class="bg__glow bg__glow--b"></div>
+            <div class="bg__glow bg__glow--c"></div>
+            <div class="bg__stripe"></div>
+        </div>
+
+        <div class="wrap">
+            <header class="hero">
+                <div class="hero__left">
+                    <div class="logo" aria-hidden="true">OT</div>
+                    <div class="hero__titles">
+                        <div class="hero__title">Oẳn tù tì vjp pro</div>
+                        <div class="hero__sub">BẮN • KHIÊN • NẠP</div>
+                    </div>
+                </div>
+
+                <div class="hero__right">
+                    <div class="chip">Realtime</div>
+                    <button id="themeToggle" class="iconbtn" type="button">
+                        <span class="btn__icon" aria-hidden="true">🌙</span>
+                        <span class="btn__label">Dark</span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="layout">
+                <aside class="side">
+                    <section class="panel">
+                        <div class="panel__head">
+                            <div class="panel__title">Vào phòng</div>
+                            <div class="panel__hint">Điền nhanh là vô combat.</div>
+                        </div>
+
+                        <div class="panel__body">
+                            <label class="field">
+                                <span class="field__label">Nickname</span>
+                                <input id="name" class="input" placeholder="Ví dụ: tudung" autocomplete="nickname" />
+                            </label>
+
+                            <label class="field">
+                                <span class="field__label">Room ID</span>
+                                <input id="roomId" class="input" placeholder="Ví dụ: room-1" autocomplete="off" />
+                            </label>
+
+                            <div class="row">
+                                <button id="joinRoomBtn" class="btn btn--join" onclick="joinRoom()">
+                                    <span class="btn__icon" aria-hidden="true">▶</span>
+                                    <span class="btn__label">VÔ PHÒNG</span>
+                                </button>
+                                <button class="btn btn--ghost" type="button" onclick="leaveRoom()">
+                                    <span class="btn__icon" aria-hidden="true">⏏</span>
+                                    <span class="btn__label">Rời</span>
+                                </button>
+                            </div>
+
+                            <div class="tip">Mở 2 tab để test PVP nhanh.</div>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel__head">
+                            <div class="panel__title">Danh sách phòng</div>
+                            <div class="panel__hint">Chọn phòng là vào ngay.</div>
+                        </div>
+
+                        <div id="noRoomMsg" class="empty" style="display: none">No rooms available</div>
+                        <ul id="rooms" class="room-list"></ul>
+                    </section>
+                </aside>
+
+                <section class="stage">
+                    <section class="score panel" id="game" style="display: none">
+                        <div class="score__top">
+                            <div class="score__left">
+                                <div class="score__label">TRẠNG THÁI</div>
+                                <div id="status" class="score__status"></div>
+                            </div>
+                            <div class="score__timer" role="status" aria-live="polite">
+                                <div class="score__label">TIMER</div>
+                                <div id="timer" class="score__time"></div>
+                            </div>
+                        </div>
+
+                        <div class="duel">
+                            <div class="cardp cardp--me">
+                                <div class="cardp__top">
+                                    <div class="cardp__name">
+                                        <span class="tag tag--me">YOU</span>
+                                        <span id="myName">Bạn</span>
+                                    </div>
+                                    <div id="myStatus" class="ready" title="Đã chọn hành động?">💬</div>
+                                </div>
+                                <div class="stats">
+                                    <div id="bullets" class="stat"></div>
+                                    <div id="shieldStreak" class="stat"></div>
+                                </div>
+                            </div>
+
+                            <div class="mid" aria-hidden="true">
+                                <div class="mid__vs">VS</div>
+                                <div class="mid__line"></div>
+                            </div>
+
+                            <div class="cardp cardp--enemy">
+                                <div class="cardp__top">
+                                    <div class="cardp__name">
+                                        <span class="tag tag--enemy">ENEMY</span>
+                                        <span id="enemyName">Đối phương</span>
+                                    </div>
+                                    <div id="enemyStatus" class="ready" title="Đã chọn hành động?">💬</div>
+                                </div>
+                                <div class="stats">
+                                    <div id="enemyBullets" class="stat"></div>
+                                    <div id="enemyShieldStreak" class="stat"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="controls">
+                            <button id="shootBtn" class="action action--shoot" onclick="sendAction('shoot')">
+                                <span class="action__k">A</span>
+                                <span class="action__t">Bắn</span>
+                            </button>
+                            <button id="shieldBtn" class="action action--shield" onclick="sendAction('shield')">
+                                <span class="action__k">S</span>
+                                <span class="action__t">Khiên</span>
+                            </button>
+                            <button id="reloadBtn" class="action action--reload" onclick="sendAction('reload')">
+                                <span class="action__k">D</span>
+                                <span class="action__t">Nạp</span>
+                            </button>
+
+                            <div class="controls__spacer"></div>
+
+                            <button class="btn btn--ghost" onclick="restartGame()">
+                                <span class="btn__icon" aria-hidden="true">⟲</span>
+                                <span class="btn__label">Bắt đầu lại</span>
+                            </button>
+                            <button class="btn btn--ghost btn--leave" onclick="leaveRoom()">
+                                <span class="btn__icon" aria-hidden="true">⏏</span>
+                                <span class="btn__label">Rời</span>
+                            </button>
+                        </div>
+
+                        <div class="lower">
+                            <div class="panel panel--inner">
+                                <div class="panel__head">
+                                    <div class="panel__title">Log</div>
+                                    <div class="panel__hint">Thông báo ván hiện tại.</div>
+                                </div>
+                                <div id="log" class="log"></div>
+                            </div>
+
+                            <div id="result" class="result" aria-live="polite"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel panel--placeholder" id="gamePlaceholder">
+                        <div class="placeholder">
+                            <div class="placeholder__title">Chưa vào phòng</div>
+                            <div class="placeholder__sub">Tạo/chọn Room ID bên trái để bắt đầu.</div>
+                        </div>
+                    </section>
+                </section>
+            </main>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="script2.js"></script>
+    </body>
+</html>

@@ -9,32 +9,32 @@
             <h1>Oẳn tù tì vjp pro</h1>
 
             <div class="section">
-                <h3>Join Room</h3>
+                <h3>Vào Phòng</h3>
                 <input id="name" placeholder="Nickname" />
                 <input id="roomId" placeholder="Room ID" />
-                <button onclick="joinRoom()">Join Room</button>
+                <button id="joinRoomBtn" onclick="joinRoom()">Vô</button>
             </div>
 
             <div class="section">
-                <h3>Room List</h3>
+                <h3>Danh sách phòng</h3>
                 <div id="noRoomMsg" style="display: none; color: #666;">No rooms available</div>
                 <ul id="rooms"></ul>
             </div>
 
             <div class="section" id="game" style="display: none">
-                <h3>Game Status</h3>
+                <h3>Game hiện tại</h3>
                 <p id="status"></p>
                 <p id="timer"></p>
 
                 <div class="row">
                     <div class="col">
-                        <h4><span id="myName">You</span> <span id="myStatus">💬</span></h4>
+                        <h4><span id="myName">Bạn</span> <span id="myStatus">💬</span></h4>
                         <p id="bullets"></p>
                         <p id="shieldStreak"></p>
                     </div>
 
                     <div class="col">
-                        <h4><span id="enemyName">Opponent</span> <span id="enemyStatus">💬</span></h4>
+                        <h4><span id="enemyName">Đối phương</span> <span id="enemyStatus">💬</span></h4>
                         <p id="enemyBullets"></p>
                         <p id="enemyShieldStreak"></p>
                     </div>
@@ -42,20 +42,20 @@
 
                 <div style="margin-top: 15px">
                     <button id="shootBtn" onclick="sendAction('shoot')">
-                        Shoot
+                        Bắn
                     </button>
                     <button id="shieldBtn" onclick="sendAction('shield')">
-                        Shield
+                        Khiên
                     </button>
                     <button id="reloadBtn" onclick="sendAction('reload')">
-                        Reload
+                        Nạp
                     </button>
-                    <button onclick="restartGame()">Restart</button>
-                    <button onclick="leaveRoom()" style="background-color: #dc3545; color: white;">Leave Room</button>
+                    <button onclick="restartGame()">Bắt đầu lại</button>
+                    <button onclick="leaveRoom()" style="background-color: #dc3545; color: white;">Rời</button>
                 </div>
 
                 <div style="margin-top: 20px">
-                    <h4>Log</h4>
+                    <h4>Trạng thái</h4>
                     <p id="log"></p>
                     <div id="result" class="result-container"></div>
                 </div>

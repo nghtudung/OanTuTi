@@ -27,7 +27,7 @@ function resetRoom(room) {
         p.action = null;
         p.shieldStreak = 0;
     });
-    room.log = "New game started!";
+    room.log = "Bắt đầu ván mới!";
     room.timer = 10;
 }
 
@@ -46,16 +46,16 @@ function resolveTurn(room) {
 
     if (p1.action === "shoot" && p2.action === "reload") {
         p2.dead = true;
-        log = `${p1.name} shot ${p2.name}`;
+        log = `${p1.name} bắn ${p2.name}`;
     } else if (p2.action === "shoot" && p1.action === "reload") {
         p1.dead = true;
-        log = `${p2.name} shot ${p1.name}`;
+        log = `${p2.name} bắn ${p1.name}`;
     } else if (p1.action === "shoot" && p2.action === "shield") {
-        log = `${p2.name} blocked`;
+        log = `${p2.name} chặn`;
     } else if (p2.action === "shoot" && p1.action === "shield") {
-        log = `${p1.name} blocked`;
+        log = `${p1.name} chặn`;
     } else {
-        log = "Both acted";
+        log = "Không có gì :D";
     }
 
     p1.shieldStreak = p1.action === "shield" ? p1.shieldStreak + 1 : 0;
@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
         if (!rooms[roomId]) {
             rooms[roomId] = {
                 players: [],
-                log: "Waiting...",
+                log: "Đang chờ...",
                 timer: 10,
             };
         }
@@ -102,7 +102,7 @@ io.on("connection", (socket) => {
         const room = rooms[roomId];
 
         if (room.players.length >= 2) {
-            socket.emit("message", "Room full");
+            socket.emit("message", "Hết slot");
             return;
         }
 
