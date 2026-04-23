@@ -144,12 +144,32 @@ io.on("connection", (socket) => {
         io.to(roomId).emit("state", room);
     });
 
+
+    socket.on("leaveRoom", (roomId) => {
+        const room = rooms[roomId];
+        if (!room) return;
+
+        room.players = room.players.filter((p) => p.id !== socket.id);
+        socket.leave(roomId);
+
+        if (room.players.length === 0) {
+            delete rooms[roomId];
+        } else {
+            io.to(roomId).emit("state", room);
+        }
+
+        io.emit("roomList", getRoomList());
+    });
     socket.on("disconnect", () => {
         for (const roomId in rooms) {
             const room = rooms[roomId];
             room.players = room.players.filter((p) => p.id !== socket.id);
 
-            io.to(roomId).emit("state", room);
+            if (room.players.length === 0) {
+                delete rooms[roomId];
+            } else {
+                io.to(roomId).emit("state", room);
+            }
         }
         io.emit("roomList", getRoomList());
     });

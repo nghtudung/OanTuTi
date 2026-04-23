@@ -17,6 +17,7 @@
 
             <div class="section">
                 <h3>Room List</h3>
+                <div id="noRoomMsg" style="display: none; color: #666;">No rooms available</div>
                 <ul id="rooms"></ul>
             </div>
 
@@ -27,13 +28,13 @@
 
                 <div class="row">
                     <div class="col">
-                        <h4>You <span id="myStatus">💬</span></h4>
+                        <h4><span id="myName">You</span> <span id="myStatus">💬</span></h4>
                         <p id="bullets"></p>
                         <p id="shieldStreak"></p>
                     </div>
 
                     <div class="col">
-                        <h4>Opponent <span id="enemyStatus">💬</span></h4>
+                        <h4><span id="enemyName">Opponent</span> <span id="enemyStatus">💬</span></h4>
                         <p id="enemyBullets"></p>
                         <p id="enemyShieldStreak"></p>
                     </div>
@@ -50,12 +51,13 @@
                         Reload
                     </button>
                     <button onclick="restartGame()">Restart</button>
+                    <button onclick="leaveRoom()" style="background-color: #dc3545; color: white;">Leave Room</button>
                 </div>
 
                 <div style="margin-top: 20px">
                     <h4>Log</h4>
                     <p id="log"></p>
-                    <p id="result"></p>
+                    <div id="result" class="result-container"></div>
                 </div>
             </div>
         </div>
