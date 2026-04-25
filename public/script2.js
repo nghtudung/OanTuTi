@@ -1,3 +1,18 @@
+function toggleTheme() {
+    const isLight = document.documentElement.classList.toggle("light");
+    document.getElementById("themeIcon").innerText = isLight ? "🌙" : "☀️";
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+}
+
+(function () {
+    if (localStorage.getItem("theme") === "light") {
+        document.documentElement.classList.add("light");
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("themeIcon").innerText = "🌙";
+        });
+    }
+})();
+
 const socket = io();
 
 const MAX_BULLETS = 3;
@@ -8,68 +23,21 @@ let currentRoom = "";
 let myName = "";
 let enemyName = "";
 
-const THEME_KEY = "oantuti:theme";
-
-function $(id) {
-    return document.getElementById(id);
-}
-
-function animateOnce(el, className) {
-    if (!el) return;
-    el.classList.remove(className);
-    // Force reflow so animation can restart.
-    void el.offsetWidth;
-    el.classList.add(className);
-}
-
-function setTheme(theme) {
-    const html = document.documentElement;
-    if (theme === "dark") html.setAttribute("data-theme", "dark");
-    else html.removeAttribute("data-theme");
-
-    const btn = $("themeToggle");
-    if (btn) {
-        const icon = btn.querySelector(".btn__icon");
-        const label = btn.querySelector(".btn__label");
-        const isDark = theme === "dark";
-        if (icon) icon.textContent = isDark ? "☀️" : "🌙";
-        if (label) label.textContent = isDark ? "Light" : "Dark";
-        btn.setAttribute("aria-pressed", String(isDark));
-    }
-}
-
-function initTheme() {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved === "dark" || saved === "light") {
-        setTheme(saved);
-        return;
-    }
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(prefersDark ? "dark" : "light");
-}
-
-function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute("data-theme") === "dark";
-    const next = isDark ? "light" : "dark";
-    localStorage.setItem(THEME_KEY, next);
-    setTheme(next);
-}
-
 socket.on("connect", () => {
     myId = socket.id;
 });
 
 function joinRoom(roomId = null) {
-    const nameInput = $("name");
-    const name = (nameInput?.value || "").trim() || "Player";
+    const nameInput = document.getElementById("name");
+    const name = nameInput.value.trim() || "Player";
 
     if (!name) {
         alert("Nhập tên trước đã");
+        nameInput.focus();
         return;
     }
 
-    currentRoom = roomId || ($("roomId")?.value || "").trim();
+    currentRoom = roomId || document.getElementById("roomId").value.trim();
     if (!currentRoom) {
         alert("Nhập hoặc chọn ID phòng");
         return;
@@ -77,11 +45,10 @@ function joinRoom(roomId = null) {
 
     myName = name;
     socket.emit("joinRoom", { roomId: currentRoom, name });
-    $("game").style.display = "block";
-    const ph = $("gamePlaceholder");
-    if (ph) ph.style.display = "none";
-    $("joinRoomBtn").disabled = true;
-    animateOnce($("game"), "anim-pop");
+
+    document.getElementById("game").style.display = "flex";
+    document.getElementById("waitingState").style.display = "none";
+    document.getElementById("joinRoomBtn").disabled = true;
 }
 
 function sendAction(action) {
@@ -91,11 +58,6 @@ function sendAction(action) {
 
 function restartGame() {
     socket.emit("restart", currentRoom);
-    const res = $("result");
-    if (res) {
-        res.className = "result";
-        res.style.display = "none";
-    }
 }
 
 function leaveRoom() {
@@ -104,22 +66,56 @@ function leaveRoom() {
     currentRoom = "";
     myName = "";
     enemyName = "";
-    $("game").style.display = "none";
-    const ph = $("gamePlaceholder");
-    if (ph) ph.style.display = "block";
-    $("joinRoomBtn").disabled = false;
+
+    document.getElementById("game").style.display = "none";
+    document.getElementById("waitingState").style.display = "flex";
+    document.getElementById("joinRoomBtn").disabled = false;
+
+    document.getElementById("log").innerText = "Chờ vào phòng...";
+    hideResult();
+
     socket.emit("getRoomList");
 }
 
 function disableButtons(disabled) {
-    $("shootBtn").disabled = disabled;
-    $("shieldBtn").disabled = disabled;
-    $("reloadBtn").disabled = disabled;
+    document.getElementById("shootBtn").disabled = disabled;
+    document.getElementById("shieldBtn").disabled = disabled;
+    document.getElementById("reloadBtn").disabled = disabled;
+}
+
+function showResult(text, type) {
+    document.getElementById("timerLabel").style.display = "none";
+    document.getElementById("timer").style.display = "none";
+    document.getElementById("vsBadge").style.display = "none";
+
+    const el = document.getElementById("result");
+    el.innerText = text;
+    el.className = "game-result " + type;
+    el.style.display = "flex";
+}
+
+function hideResult() {
+    document.getElementById("timerLabel").style.display = "";
+    document.getElementById("timer").style.display = "";
+    document.getElementById("vsBadge").style.display = "";
+
+    const el = document.getElementById("result");
+    el.style.display = "none";
+    el.className = "game-result";
+}
+
+function updateTimerUrgency(seconds) {
+    const el = document.getElementById("timer");
+    if (seconds <= 3 && seconds > 0) {
+        el.classList.add("urgent");
+    } else {
+        el.classList.remove("urgent");
+    }
 }
 
 socket.on("roomList", (rooms) => {
-    const ul = $("rooms");
-    const noRoomMsg = $("noRoomMsg");
+    const ul = document.getElementById("rooms");
+    const noRoomMsg = document.getElementById("noRoomMsg");
     ul.innerHTML = "";
 
     if (rooms.length === 0) {
@@ -131,138 +127,104 @@ socket.on("roomList", (rooms) => {
 
     rooms.forEach((room) => {
         const li = document.createElement("li");
-        li.className = "room-item";
 
-        const meta = document.createElement("div");
-        meta.className = "room-meta";
+        const idSpan = document.createElement("span");
+        idSpan.className = "room-id";
+        idSpan.innerText = room.id;
 
-        const title = document.createElement("div");
-        title.className = "room-id";
-        title.innerText = room.id;
+        const countSpan = document.createElement("span");
+        countSpan.className = "room-count";
+        countSpan.innerText = `${room.players}/2`;
 
-        const sub = document.createElement("div");
-        sub.className = "room-sub";
-        sub.innerText = `${room.players}/2 người`;
+        const btn = document.createElement("button");
+        const isFull = room.players >= 2;
+        btn.className = "room-join-btn" + (isFull ? " full" : "");
+        btn.innerText = isFull ? "ĐẦY" : "Vô";
+        btn.disabled = isFull || !!currentRoom;
 
-        meta.appendChild(title);
-        meta.appendChild(sub);
-
-        const joinBtn = document.createElement("button");
-        joinBtn.className = "btn btn--primary";
-        joinBtn.type = "button";
-        joinBtn.innerHTML = `<span class="btn__icon" aria-hidden="true">🚪</span><span class="btn__label">Vô</span>`;
-
-        if (currentRoom) {
-            joinBtn.disabled = true;
+        if (!isFull && !currentRoom) {
+            btn.onclick = () => {
+                const nameInput = document.getElementById("name");
+                if (!nameInput.value.trim()) {
+                    alert("Nhập tên trước đã");
+                    nameInput.focus();
+                    return;
+                }
+                joinRoom(room.id);
+            };
         }
 
-        joinBtn.onclick = () => {
-            const nameInput = $("name");
-            if (!nameInput.value.trim()) {
-                alert("Nhập tên trước đã");
-                nameInput.focus();
-                return;
-            }
-            joinRoom(room.id);
-        };
-
-        li.appendChild(meta);
-        li.appendChild(joinBtn);
+        li.appendChild(idSpan);
+        li.appendChild(countSpan);
+        li.appendChild(btn);
         ul.appendChild(li);
-        animateOnce(li, "anim-pop");
     });
 });
 
 socket.on("message", (msg) => alert(msg));
 
-let lastTimerText = "";
-let lastLogText = "";
-let lastMyStatus = "";
-let lastEnemyStatus = "";
-
 socket.on("state", (room) => {
     const me = room.players.find((p) => p.id === myId);
     const enemy = room.players.find((p) => p.id !== myId);
 
-    if (me) {
-        myName = me.name;
-        $("myName").innerText = me.name;
-    }
-    if (enemy) {
-        enemyName = enemy.name;
-        $("enemyName").innerText = enemy.name;
-    }
+    if (me) document.getElementById("myName").innerText = me.name;
+    if (enemy) document.getElementById("enemyName").innerText = enemy.name;
 
-    $("status").innerText = room.players.length < 2 ? "Chờ đối phương..." : "Game bắt đầu!";
-
-    const timerText = "Thời gian còn lại: " + room.timer;
-    $("timer").innerText = timerText;
-    if (timerText !== lastTimerText) animateOnce($("timer"), "anim-pulse");
-    lastTimerText = timerText;
-
-    $("bullets").innerText = me ? `Đạn: ${me.bullets}` : "";
-    $("enemyBullets").innerText = enemy ? `Đạn: ${enemy.bullets}` : "";
-
-    $("shieldStreak").innerText = me ? `Chuỗi khiên: ${me.shieldStreak}` : "";
-    $("enemyShieldStreak").innerText = enemy ? `Chuỗi khiên: ${enemy.shieldStreak}` : "";
-
-    const myStatus = me ? (me.action ? "✅" : "💬") : "💬";
-    const enemyStatus = enemy ? (enemy.action ? "✅" : "💬") : "💬";
-    $("myStatus").innerText = myStatus;
-    $("enemyStatus").innerText = enemyStatus;
-
-    if (myStatus !== lastMyStatus) animateOnce($("myStatus"), "anim-pop");
-    if (enemyStatus !== lastEnemyStatus) animateOnce($("enemyStatus"), "anim-pop");
-    lastMyStatus = myStatus;
-    lastEnemyStatus = enemyStatus;
-
-    $("log").innerText = room.log;
-    if (room.log !== lastLogText) animateOnce($("log"), "anim-pop");
-    lastLogText = room.log;
-
-    const resultDiv = $("result");
-    resultDiv.className = "result";
-    resultDiv.innerHTML = "";
-    resultDiv.style.display = "none";
-
-    if (me && me.action === null && !me.dead) {
-        disableButtons(false);
+    const statusEl = document.getElementById("log");
+    if (room.players.length < 2) {
+        statusEl.innerText = "⏳ Đang chờ đối thủ vào phòng...";
+    } else {
+        statusEl.innerText = room.log || "Game đang chạy";
     }
 
-    if (me) {
-        if (me.bullets < 1) $("shootBtn").disabled = true;
-        if (me.shieldStreak >= MAX_SHIELD_STREAK) $("shieldBtn").disabled = true;
-    }
+    const timerVal = room.timer;
+    document.getElementById("timer").innerText =
+        room.players.length < 2 ? "—" : timerVal;
+    updateTimerUrgency(timerVal);
+
+    document.getElementById("bullets").innerText = me ? me.bullets : "0";
+    document.getElementById("shieldStreak").innerText = me
+        ? me.shieldStreak
+        : "0";
+    document.getElementById("enemyBullets").innerText = enemy
+        ? enemy.bullets
+        : "?";
+    document.getElementById("enemyShieldStreak").innerText = enemy
+        ? enemy.shieldStreak
+        : "?";
+
+    document.getElementById("myStatus").innerText = me
+        ? me.action
+            ? "✅"
+            : "💬"
+        : "💬";
+    document.getElementById("enemyStatus").innerText = enemy
+        ? enemy.action
+            ? "✅"
+            : "💬"
+        : "💬";
+
+    hideResult();
 
     if (me && me.dead) {
-        resultDiv.innerText = "Đừng đẻ trứng nhé!";
-        resultDiv.classList.add("result--lose");
-        resultDiv.style.display = "block";
-        animateOnce(resultDiv, "anim-shake");
+        showResult("THUA!", "lose");
         disableButtons(true);
     }
 
     if (enemy && enemy.dead) {
-        resultDiv.innerText = "Booyah!";
-        resultDiv.classList.add("result--win");
-        resultDiv.style.display = "block";
-        animateOnce(resultDiv, "anim-pop");
+        showResult("THẮNG! 🏆", "win");
         disableButtons(true);
     }
+
+    if (me && me.action === null && !me.dead && room.players.length === 2) {
+        disableButtons(false);
+    }
+
+    if (me && me.bullets < 1) {
+        document.getElementById("shootBtn").disabled = true;
+    }
+
+    if (me && me.shieldStreak >= MAX_SHIELD_STREAK) {
+        document.getElementById("shieldBtn").disabled = true;
+    }
 });
-
-document.addEventListener("DOMContentLoaded", () => {
-    initTheme();
-    const t = $("themeToggle");
-    if (t) t.addEventListener("click", toggleTheme);
-
-    // Quality-of-life: Enter to join.
-    const name = $("name");
-    const roomId = $("roomId");
-    const onEnter = (e) => {
-        if (e.key === "Enter") joinRoom();
-    };
-    if (name) name.addEventListener("keydown", onEnter);
-    if (roomId) roomId.addEventListener("keydown", onEnter);
-});
-

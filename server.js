@@ -10,6 +10,7 @@ app.use(express.static("public"));
 
 const MAX_BULLETS = 3;
 const MAX_SHIELD_STREAK = 5;
+const PORT = 3000;
 
 const rooms = {};
 
@@ -175,4 +176,4 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(3000, () => console.log("http://localhost:3000"));
+server.listen(PORT, () => console.log("http://localhost:3000"));

@@ -1,59 +1,86 @@
 # OanTuTi - Oẳn tù tì vjp pro
 
-Một trò chơi chiến thuật nhiều người chơi kết hợp yếu tố may rủi và tính toán trong thời gian thực.
-
-## 🎮 Luật Chơi Cơ Bản
-
-OanTuTi là một trò chơi 1v1 đấu tranh sinh tử giữa hai người chơi. Mỗi lượt kéo dài 10 giây, bạn phải chọn một trong ba hành động:
-
-### Các Hành Động
-
-| Hành Động | Mô Tả | Điều Kiện |
-|-----------|-------|----------|
-| **Shoot (Bắn)** | Bắn súng tấn công đối thủ. Nếu đối thủ đang reload, họ sẽ chết. Nếu đối thủ có shield, bản đạn sẽ bị chặn. | Phải có ≥ 1 viên đạn |
-| **Shield (Chắn)** | Dựng khiên để bảo vệ bản thân, chặn mọi viên đạn từ đối thủ. | Không thể chắn liên tiếp > 5 lần |
-| **Reload (Nạp đạn)** | Nạp 1 viên đạn vào kho (tối đa 3 viên). Nếu bị bắn lúc này, bạn sẽ chết. | Không yêu cầu điều kiện |
-
-### Bảng Kết Quả
-
-```
-Shoot  + Shoot        = Cả hai không bị tổn thương
-Shoot  + Shield       = Đạn bị chặn
-Shoot  + Reload       = Đối thủ chết ☠️
-Shield + Shield       = Cả hai không bị tổn thương
-Shield + Reload       = Người reload an toàn
-Reload + Reload       = Cả hai nạp thêm đạn
-```
-
-## 🏆 Cách Chiến Thắng
-
-Để chiến thắng, bạn cần **tiêu diệt đối thủ** bằng cách bắn họ khi họ đang **reload**.
-
-Điều này đòi hỏi:
-- Quản lý đạn thông minh (không lãng phí)
-- Dự đoán hành động đối thủ
-- Chọn đúng thời điểm để tấn công
-
-## 📊 Thống Kê & Giới Hạn
-
-- **Đạn tối đa**: 3 viên
-- **Giới hạn khiên liên tiếp**: 5 lần chắn liên tiếp rồi phải dừng
-- **Thời gian mỗi lượt**: 10 giây
-
-## 🚀 Cách Chơi
-
-1. **Nhập nickname**: Nhập tên người chơi của bạn
-2. **Chọn phòng**: Nhập ID phòng hoặc tạo phòng mới
-3. **Chờ đối thủ**: Chơi sẽ bắt đầu khi có 2 người chơi
-4. **Chọn hành động**: Bấm Shoot, Shield, hoặc Reload trong 10 giây
-5. **Xem kết quả**: Log sẽ hiển thị (ví dụ: "Player 1 shot Player 2")
-6. **Lặp lại**: Chơi tiếp cho đến khi bạn hoặc đối thủ thua
-
-## 🎮 Ký Hiệu Trạng Thái
-
-- 💬 = Chưa chọn hành động
-- ✅ = Đã chọn hành động
+A simple web-based variant of rock-paper-scissors game built with Node.js. 
 
 ---
 
-**Chúc bạn chơi vui!** 🎯
+## 🚀 Features
+
+- 🎮 Play the variant of rock-paper-scissors in your browser
+- 🖥️ Host your own lightweight game server
+- 🧼 Minimal setup, easy to run
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/nghtudung/OanTuTi.git
+cd OanTuTi
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the server
+
+```bash
+node server.js
+```
+
+By default, the server runs on port `3000`. You can change this by editing the `PORT` variable in `server.js`.
+
+### 4. Open your browser
+
+Go to:
+
+```
+http://localhost:3000
+```
+
+(Or replace `3000` with the port you chose.)
+
+---
+
+## 🧪 Example
+
+Open the link in two separate browser tabs/windows. Play rock-paper-scissors with a friend!
+
+---
+
+## 📁 Project Structure
+
+```
+OanTuTi/
+├── public/
+│   ├── index.html       # Game UI
+│   ├── style.css        # Game styles
+│   ├── script.js        # Client-side game logic
+├── server.js            # Server logic using Express
+├── package.json
+└── README.md
+```
+
+---
+
+## 🙌 Contributing
+
+Feel free to fork this repo, submit pull requests, or open issues if you have ideas, questions, or bugs.  
+This is a small side project, but I’m happy if it brings joy to someone out there!
+
+---
+
+## 🧃 License
+
+Apache 2.0 License.  
+Use it however you like — just don’t forget to drink water 💦
+
+---
+
+From [GieJack™](https://www.youtube.com/watch?v=dQw4w9WgXcQ) with love <3
+
