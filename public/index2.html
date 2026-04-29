@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="style2.css" />
     </head>
     <body>
+        <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
         <header class="topbar">
             <h1 class="logo">OẲN TÙ TÌ <span>VJP PRO</span></h1>
             <div class="name-box">
@@ -33,17 +34,23 @@
             </div>
         </header>
 
+        <!-- ══ MAIN LAYOUT ══════════════════════════════════════════════════════ -->
         <main class="layout">
+            <!-- LEFT: GAME PANEL -->
             <section class="game-panel">
+                <!-- Status log bar -->
                 <div class="log-bar">
                     <span id="log">Chờ vào phòng...</span>
                 </div>
 
+                <!-- Waiting state -->
                 <div id="waitingState" class="waiting-state">
                     <p class="waiting-text">Chọn hoặc tạo phòng để bắt đầu →</p>
                 </div>
 
+                <!-- Game area (hidden until joined) -->
                 <div id="game" style="display: none" class="game-area">
+                    <!-- Player 2 (enemy) — top -->
                     <div class="player-zone enemy-zone">
                         <div class="player-name" id="enemyName">???</div>
                         <div class="player-stats">
@@ -82,7 +89,7 @@
                                 >🔫 Đạn: <strong id="bullets">0</strong></span
                             >
                             <span class="stat-pill"
-                                >🛡️ Chuỗi khiên:
+                                >🛡️ Chuỗi:
                                 <strong id="shieldStreak">0</strong></span
                             >
                             <span class="action-indicator" id="myStatus"
@@ -93,10 +100,31 @@
                         <!-- Action buttons -->
                         <div class="action-row">
                             <button
+                                id="reloadBtn"
+                                class="action-btn reload"
+                                onclick="sendAction('reload')"
+                                title="[A] Nạp đạn"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <polyline points="23 4 23 10 17 10" />
+                                    <path
+                                        d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"
+                                    />
+                                </svg>
+                                <span>Nạp <kbd>A</kbd></span>
+                            </button>
+                            <button
                                 id="shootBtn"
                                 class="action-btn shoot"
                                 onclick="sendAction('shoot')"
-                                title="Bắn"
+                                title="[S] Bắn"
                             >
                                 <svg
                                     viewBox="0 0 24 24"
@@ -116,41 +144,20 @@
                                     />
                                     <circle cx="19" cy="17" r="2" />
                                 </svg>
-                                <span>Bắn</span>
+                                <span>Bắn <kbd>S</kbd></span>
                             </button>
                             <button
                                 id="shieldBtn"
                                 class="action-btn shield"
                                 onclick="sendAction('shield')"
-                                title="Khiên"
+                                title="[D] Khiên"
                             >
                                 <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path
                                         d="M12 2L3 7v6c0 5.25 3.75 10.15 9 11.25C17.25 23.15 21 18.25 21 13V7l-9-5z"
                                     />
                                 </svg>
-                                <span>Khiên</span>
-                            </button>
-                            <button
-                                id="reloadBtn"
-                                class="action-btn reload"
-                                onclick="sendAction('reload')"
-                                title="Nạp đạn"
-                            >
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2.2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                >
-                                    <polyline points="23 4 23 10 17 10" />
-                                    <path
-                                        d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"
-                                    />
-                                </svg>
-                                <span>Nạp</span>
+                                <span>Khiên <kbd>D</kbd></span>
                             </button>
                         </div>
 
@@ -160,15 +167,17 @@
                     <!-- Bottom controls -->
                     <div class="game-controls">
                         <button class="ctrl-btn" onclick="restartGame()">
-                            🔁 Ván mới
+                            ↺ Ván mới <kbd>R</kbd>
                         </button>
                         <button class="ctrl-btn danger" onclick="leaveRoom()">
-                            🚪 Rời phòng
+                            ✕ Rời phòng <kbd>E</kbd>
                         </button>
                     </div>
                 </div>
+                <!-- /game-area -->
             </section>
 
+            <!-- RIGHT: ROOM SIDEBAR -->
             <aside class="room-sidebar">
                 <div class="sidebar-header">Danh sách phòng</div>
 

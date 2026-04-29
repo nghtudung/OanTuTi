@@ -73,7 +73,6 @@ body {
     overflow-x: hidden;
 }
 
-/* ══ TOPBAR ════════════════════════════════════════════ */
 .topbar {
     display: flex;
     align-items: center;
@@ -153,7 +152,6 @@ body {
     transform: scale(0.9);
 }
 
-/* ══ LAYOUT ════════════════════════════════════════════ */
 .layout {
     display: grid;
     grid-template-columns: 1fr 320px;
@@ -161,7 +159,6 @@ body {
     overflow: hidden;
 }
 
-/* ══ GAME PANEL (left) ═════════════════════════════════ */
 .game-panel {
     display: flex;
     flex-direction: column;
@@ -169,13 +166,10 @@ body {
     overflow: hidden;
 }
 
-/* Log bar */
 .log-bar {
-    /* display: flex; */
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    text-align: center;
-    align-content: center;
     gap: 12px;
     padding: 10px 20px;
     background: var(--surface2);
@@ -189,9 +183,8 @@ body {
 
 .result-tag {
     display: none;
-} /* unused, kept for safety */
+}
 
-/* Result shown inside timer block */
 .game-result {
     display: none;
     flex-direction: column;
@@ -229,7 +222,6 @@ body {
     text-shadow: 0 0 40px var(--red-glow);
 }
 
-/* Waiting state */
 .waiting-state {
     flex: 1;
     display: flex;
@@ -243,7 +235,6 @@ body {
     letter-spacing: 0.02em;
 }
 
-/* Game area */
 .game-area {
     flex: 1;
     display: flex;
@@ -253,7 +244,6 @@ body {
     overflow: hidden;
 }
 
-/* Player zones */
 .player-zone {
     padding: 20px 32px;
     display: flex;
@@ -307,7 +297,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* Timer block */
 .timer-block {
     flex: 1;
     display: flex;
@@ -359,7 +348,6 @@ body {
     border-radius: 2px;
 }
 
-/* Action buttons */
 .action-row {
     display: flex;
     gap: 14px;
@@ -372,7 +360,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    width: 88px;
+    width: 128px;
     height: 88px;
     border: none;
     border-radius: 10px;
@@ -432,7 +420,31 @@ body {
     transform: none;
 }
 
-/* Game controls */
+kbd {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.2);
+    color: inherit;
+    line-height: 1.4;
+    vertical-align: middle;
+    letter-spacing: 0;
+}
+
+.action-btn.reload kbd {
+    border-color: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.15);
+}
+.ctrl-btn kbd {
+    border-color: var(--border-hard);
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-size: 0.65rem;
+}
+
 .game-controls {
     display: flex;
     justify-content: center;
@@ -470,7 +482,6 @@ body {
     background: rgba(232, 53, 42, 0.08);
 }
 
-/* ══ ROOM SIDEBAR (right) ══════════════════════════════ */
 .room-sidebar {
     display: flex;
     flex-direction: column;
@@ -571,7 +582,6 @@ body {
     cursor: default;
 }
 
-/* Manual room section */
 .manual-room {
     border-top: 2px solid var(--border-hard);
     padding: 14px 18px;
@@ -643,7 +653,6 @@ body {
     cursor: not-allowed;
 }
 
-/* ══ SCROLLBAR ══════════════════════════════════════════ */
 ::-webkit-scrollbar {
     width: 4px;
 }
@@ -655,7 +664,6 @@ body {
     border-radius: 2px;
 }
 
-/* ══ RESPONSIVE ═════════════════════════════════════════ */
 @media (max-width: 720px) {
     .layout {
         grid-template-columns: 1fr;

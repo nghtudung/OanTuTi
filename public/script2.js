@@ -1,3 +1,29 @@
+document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    if (!currentRoom) return;
+
+    switch (e.key.toLowerCase()) {
+        case "a":
+            if (!document.getElementById("reloadBtn").disabled)
+                sendAction("reload");
+            break;
+        case "s":
+            if (!document.getElementById("shootBtn").disabled)
+                sendAction("shoot");
+            break;
+        case "d":
+            if (!document.getElementById("shieldBtn").disabled)
+                sendAction("shield");
+            break;
+        case "r":
+            restartGame();
+            break;
+        case "e":
+            leaveRoom();
+            break;
+    }
+});
+
 function toggleTheme() {
     const isLight = document.documentElement.classList.toggle("light");
     document.getElementById("themeIcon").innerText = isLight ? "🌙" : "☀️";
@@ -32,7 +58,7 @@ function joinRoom(roomId = null) {
     const name = nameInput.value.trim() || "Player";
 
     if (!name) {
-        alert("Nhập tên trước đã");
+        alert("Nhập tên trước đã bạn ơi");
         nameInput.focus();
         return;
     }
@@ -146,7 +172,7 @@ socket.on("roomList", (rooms) => {
             btn.onclick = () => {
                 const nameInput = document.getElementById("name");
                 if (!nameInput.value.trim()) {
-                    alert("Nhập tên trước đã");
+                    alert("Nhập tên trước");
                     nameInput.focus();
                     return;
                 }
@@ -207,12 +233,12 @@ socket.on("state", (room) => {
     hideResult();
 
     if (me && me.dead) {
-        showResult("THUA!", "lose");
+        showResult("💀 Thua!", "lose");
         disableButtons(true);
     }
 
     if (enemy && enemy.dead) {
-        showResult("THẮNG! 🏆", "win");
+        showResult("🏆 Thắng!", "win");
         disableButtons(true);
     }
 

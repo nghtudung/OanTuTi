@@ -15,18 +15,18 @@ socket.on("connect", () => {
 function joinRoom(roomId = null) {
     const nameInput = document.getElementById("name");
     const name = nameInput.value.trim() || "Player";
-    
+
     if (!name) {
         alert("Nhập tên trước đã");
         return;
     }
-    
+
     currentRoom = roomId || document.getElementById("roomId").value;
     if (!currentRoom) {
         alert("Nhập hoặc chọn ID phòng");
         return;
     }
-    
+
     myName = name;
     socket.emit("joinRoom", { roomId: currentRoom, name });
     document.getElementById("game").style.display = "block";
@@ -69,7 +69,7 @@ socket.on("roomList", (rooms) => {
         noRoomMsg.style.display = "block";
         return;
     }
-    
+
     noRoomMsg.style.display = "none";
 
     rooms.forEach((room) => {
@@ -78,20 +78,20 @@ socket.on("roomList", (rooms) => {
         li.style.justifyContent = "space-between";
         li.style.alignItems = "center";
         li.style.padding = "8px 0";
-        
+
         const roomInfo = document.createElement("span");
         roomInfo.innerText = `${room.id} (${room.players}/2)`;
-        
+
         const joinBtn = document.createElement("button");
         joinBtn.innerText = "Vô";
         joinBtn.style.marginRight = "0";
-        
+
         if (currentRoom) {
             joinBtn.disabled = true;
             joinBtn.style.opacity = "0.5";
             joinBtn.style.cursor = "not-allowed";
         }
-        
+
         joinBtn.onclick = () => {
             const nameInput = document.getElementById("name");
             if (!nameInput.value.trim()) {
@@ -101,7 +101,7 @@ socket.on("roomList", (rooms) => {
             }
             joinRoom(room.id);
         };
-        
+
         li.appendChild(roomInfo);
         li.appendChild(joinBtn);
         ul.appendChild(li);
@@ -126,7 +126,8 @@ socket.on("state", (room) => {
     document.getElementById("status").innerText =
         room.players.length < 2 ? "Chờ đối phương..." : "Game bắt đầu!";
 
-    document.getElementById("timer").innerText = "Thời gian còn lại: " + room.timer;
+    document.getElementById("timer").innerText =
+        "Thời gian còn lại: " + room.timer;
 
     document.getElementById("bullets").innerText = me
         ? `Đạn: ${me.bullets}`
