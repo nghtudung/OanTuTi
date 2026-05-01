@@ -1,12 +1,72 @@
+document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    if (!currentRoom) return;
+
+    switch (e.key.toLowerCase()) {
+        case "a":
+            if (!document.getElementById("reloadBtn").disabled)
+                sendAction("reload");
+            break;
+        case "s":
+            if (!document.getElementById("shootBtn").disabled)
+                sendAction("shoot");
+            break;
+        case "d":
+            if (!document.getElementById("shieldBtn").disabled)
+                sendAction("shield");
+            break;
+    }
+});
+
 const socket = io();
 
-const MAX_BULLETS = 3;
-const MAX_SHIELD_STREAK = 5;
+const DEFAULT_SETTINGS = {
+    maxBullets: 3,
+    maxShieldStreak: 5,
+};
 
 let myId = "";
 let currentRoom = "";
 let myName = "";
 let enemyName = "";
+let lastSettingsKey = "";
+
+function getSettingInputs(name) {
+    return Array.from(document.querySelectorAll(`[data-setting="${name}"]`));
+}
+
+function getGameSettings() {
+    const maxBullets =
+        getSettingInputs("maxBullets").reverse().find((input) => input.value) ||
+        {};
+    const maxShieldStreak =
+        getSettingInputs("maxShieldStreak")
+            .reverse()
+            .find((input) => input.value) || {};
+
+    return {
+        maxBullets: Number.parseInt(maxBullets.value, 10),
+        maxShieldStreak: Number.parseInt(maxShieldStreak.value, 10),
+    };
+}
+
+function syncSettings(settings = DEFAULT_SETTINGS) {
+    const key = `${settings.maxBullets}:${settings.maxShieldStreak}`;
+    if (key === lastSettingsKey) return;
+    lastSettingsKey = key;
+
+    getSettingInputs("maxBullets").forEach((input) => {
+        input.value = settings.maxBullets;
+    });
+    getSettingInputs("maxShieldStreak").forEach((input) => {
+        input.value = settings.maxShieldStreak;
+    });
+
+    const info = document.getElementById("gameSettingsInfo");
+    if (info) {
+        info.innerText = `Luật ván: Đạn tối đa ${settings.maxBullets} | Khiên liên tiếp tối đa ${settings.maxShieldStreak}`;
+    }
+}
 
 socket.on("connect", () => {
     myId = socket.id;
@@ -28,7 +88,11 @@ function joinRoom(roomId = null) {
     }
 
     myName = name;
-    socket.emit("joinRoom", { roomId: currentRoom, name });
+    socket.emit("joinRoom", {
+        roomId: currentRoom,
+        name,
+        settings: getGameSettings(),
+    });
     document.getElementById("game").style.display = "block";
     document.getElementById("joinRoomBtn").disabled = true;
 }
@@ -39,7 +103,10 @@ function sendAction(action) {
 }
 
 function restartGame() {
-    socket.emit("restart", currentRoom);
+    socket.emit("restart", {
+        roomId: currentRoom,
+        settings: getGameSettings(),
+    });
 }
 
 function leaveRoom() {
@@ -113,6 +180,9 @@ socket.on("message", (msg) => alert(msg));
 socket.on("state", (room) => {
     const me = room.players.find((p) => p.id === myId);
     const enemy = room.players.find((p) => p.id !== myId);
+    const settings = room.settings || DEFAULT_SETTINGS;
+
+    syncSettings(settings);
 
     if (me) {
         myName = me.name;
@@ -169,7 +239,9 @@ socket.on("state", (room) => {
 
     if (me) {
         if (me.bullets < 1) document.getElementById("shootBtn").disabled = true;
-        if (me.shieldStreak >= MAX_SHIELD_STREAK)
+        if (me.bullets >= settings.maxBullets)
+            document.getElementById("reloadBtn").disabled = true;
+        if (me.shieldStreak >= settings.maxShieldStreak)
             document.getElementById("shieldBtn").disabled = true;
     }
 

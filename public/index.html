@@ -8,11 +8,32 @@
         <div class="container">
             <h1>Oẳn tù tì vjp pro</h1>
             <a href="./index2.html">bản xịn</a>
+            <a href="./index3.html">điện thoại</a>
 
             <div class="section">
                 <h3>Vào Phòng</h3>
                 <input id="name" placeholder="Nickname" />
                 <input id="roomId" placeholder="Room ID" />
+                <label>
+                    Đạn tối đa
+                    <input
+                        data-setting="maxBullets"
+                        type="number"
+                        min="1"
+                        max="99"
+                        value="3"
+                    />
+                </label>
+                <label>
+                    Khiên liên tiếp tối đa
+                    <input
+                        data-setting="maxShieldStreak"
+                        type="number"
+                        min="1"
+                        max="99"
+                        value="5"
+                    />
+                </label>
                 <button id="joinRoomBtn" onclick="joinRoom()">Vô</button>
             </div>
 
@@ -26,6 +47,9 @@
                 <h3>Game hiện tại</h3>
                 <p id="status"></p>
                 <p id="timer"></p>
+                <p id="gameSettingsInfo" class="game-settings-info">
+                    Luật ván: Đạn tối đa 3 | Khiên liên tiếp tối đa 5
+                </p>
 
                 <div class="row">
                     <div class="col">
@@ -43,13 +67,13 @@
 
                 <div style="margin-top: 15px">
                     <button id="shootBtn" onclick="sendAction('shoot')">
-                        Bắn
+                        Bắn (S)
                     </button>
                     <button id="shieldBtn" onclick="sendAction('shield')">
-                        Khiên
+                        Khiên (D)
                     </button>
                     <button id="reloadBtn" onclick="sendAction('reload')">
-                        Nạp
+                        Nạp (A)
                     </button>
                     <button onclick="restartGame()">Bắt đầu lại</button>
                     <button onclick="leaveRoom()" style="background-color: #dc3545; color: white;">Rời</button>

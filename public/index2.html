@@ -70,6 +70,9 @@
 
                     <!-- Timer -->
                     <div class="timer-block">
+                        <div id="gameSettingsInfo" class="game-settings-info">
+                            Luật ván: Đạn tối đa 3 | Khiên liên tiếp tối đa 5
+                        </div>
                         <div class="timer-label" id="timerLabel">
                             THỜI GIAN CÒN LẠI
                         </div>
@@ -190,6 +193,30 @@
 
                 <div class="manual-room">
                     <div class="manual-label">Phòng thủ công</div>
+                    <div class="settings-grid">
+                        <label>
+                            Đạn tối đa
+                            <input
+                                data-setting="maxBullets"
+                                class="room-input"
+                                type="number"
+                                min="1"
+                                max="99"
+                                value="3"
+                            />
+                        </label>
+                        <label>
+                            Khiên tối đa
+                            <input
+                                data-setting="maxShieldStreak"
+                                class="room-input"
+                                type="number"
+                                min="1"
+                                max="99"
+                                value="5"
+                            />
+                        </label>
+                    </div>
                     <div class="manual-row">
                         <input
                             id="roomId"

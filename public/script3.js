@@ -1,44 +1,3 @@
-document.addEventListener("keydown", (e) => {
-    if (e.target.tagName === "INPUT") return;
-    if (!currentRoom) return;
-
-    switch (e.key.toLowerCase()) {
-        case "a":
-            if (!document.getElementById("reloadBtn").disabled)
-                sendAction("reload");
-            break;
-        case "s":
-            if (!document.getElementById("shootBtn").disabled)
-                sendAction("shoot");
-            break;
-        case "d":
-            if (!document.getElementById("shieldBtn").disabled)
-                sendAction("shield");
-            break;
-        case "r":
-            restartGame();
-            break;
-        case "e":
-            leaveRoom();
-            break;
-    }
-});
-
-function toggleTheme() {
-    const isLight = document.documentElement.classList.toggle("light");
-    document.getElementById("themeIcon").innerText = isLight ? "🌙" : "☀️";
-    localStorage.setItem("theme", isLight ? "light" : "dark");
-}
-
-(function () {
-    if (localStorage.getItem("theme") === "light") {
-        document.documentElement.classList.add("light");
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("themeIcon").innerText = "🌙";
-        });
-    }
-})();
-
 const socket = io();
 
 const DEFAULT_SETTINGS = {
@@ -49,7 +8,6 @@ const DEFAULT_SETTINGS = {
 let myId = "";
 let currentRoom = "";
 let myName = "";
-let enemyName = "";
 let lastSettingsKey = "";
 
 function getSettingInputs(name) {
@@ -85,7 +43,7 @@ function syncSettings(settings = DEFAULT_SETTINGS) {
 
     const info = document.getElementById("gameSettingsInfo");
     if (info) {
-        info.innerText = `Luật ván: Đạn tối đa ${settings.maxBullets} | Khiên liên tiếp tối đa ${settings.maxShieldStreak}`;
+        info.innerText = `Đạn tối đa ${settings.maxBullets} | Khiên tối đa ${settings.maxShieldStreak}`;
     }
 }
 
@@ -93,19 +51,48 @@ socket.on("connect", () => {
     myId = socket.id;
 });
 
+function toggleTheme() {
+    const isLight = document.documentElement.classList.toggle("light");
+    document.getElementById("themeIcon").innerText = isLight ? "🌙" : "☀️";
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+}
+
+(function () {
+    if (localStorage.getItem("theme") === "light") {
+        document.documentElement.classList.add("light");
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("themeIcon").innerText = "🌙";
+        });
+    }
+})();
+
+function showGame() {
+    document.getElementById("lobbyView").style.display = "none";
+    document.getElementById("gameView").style.display = "flex";
+}
+
+function showLobby() {
+    document.getElementById("gameView").style.display = "none";
+    document.getElementById("lobbyView").style.display = "flex";
+}
+
 function joinRoom(roomId = null) {
     const nameInput = document.getElementById("name");
-    const name = nameInput.value.trim() || "Player";
+    const name = nameInput.value.trim();
 
     if (!name) {
-        alert("Nhập tên trước đã bạn ơi");
         nameInput.focus();
+        nameInput.placeholder = "Nhập tên trước đã! ⚠️";
+        setTimeout(() => (nameInput.placeholder = "Nhập nickname..."), 2000);
         return;
     }
 
     currentRoom = roomId || document.getElementById("roomId").value.trim();
     if (!currentRoom) {
-        alert("Nhập hoặc chọn ID phòng");
+        const ri = document.getElementById("roomId");
+        ri.focus();
+        ri.placeholder = "Nhập mã phòng! ⚠️";
+        setTimeout(() => (ri.placeholder = "Mã phòng..."), 2000);
         return;
     }
 
@@ -115,10 +102,8 @@ function joinRoom(roomId = null) {
         name,
         settings: getGameSettings(),
     });
-
-    document.getElementById("game").style.display = "flex";
-    document.getElementById("waitingState").style.display = "none";
     document.getElementById("joinRoomBtn").disabled = true;
+    showGame();
 }
 
 function sendAction(action) {
@@ -138,15 +123,11 @@ function leaveRoom() {
     socket.emit("leaveRoom", currentRoom);
     currentRoom = "";
     myName = "";
-    enemyName = "";
 
-    document.getElementById("game").style.display = "none";
-    document.getElementById("waitingState").style.display = "flex";
+    document.getElementById("log").innerText = "Chờ đối thủ...";
     document.getElementById("joinRoomBtn").disabled = false;
-
-    document.getElementById("log").innerText = "Chờ vào phòng...";
     hideResult();
-
+    showLobby();
     socket.emit("getRoomList");
 }
 
@@ -157,9 +138,7 @@ function disableButtons(disabled) {
 }
 
 function showResult(text, type) {
-    document.getElementById("timerLabel").style.display = "none";
-    document.getElementById("timer").style.display = "none";
-    document.getElementById("vsBadge").style.display = "none";
+    document.getElementById("timerWrap").style.display = "none";
 
     const el = document.getElementById("result");
     el.innerText = text;
@@ -168,35 +147,33 @@ function showResult(text, type) {
 }
 
 function hideResult() {
-    document.getElementById("timerLabel").style.display = "";
-    document.getElementById("timer").style.display = "";
-    document.getElementById("vsBadge").style.display = "";
+    document.getElementById("timerWrap").style.display = "";
 
     const el = document.getElementById("result");
     el.style.display = "none";
     el.className = "game-result";
 }
 
-function updateTimerUrgency(seconds) {
+function updateTimerUrgency(s) {
     const el = document.getElementById("timer");
-    if (seconds <= 3 && seconds > 0) {
-        el.classList.add("urgent");
-    } else {
-        el.classList.remove("urgent");
-    }
+    if (s <= 3 && s > 0) el.classList.add("urgent");
+    else el.classList.remove("urgent");
 }
 
 socket.on("roomList", (rooms) => {
     const ul = document.getElementById("rooms");
-    const noRoomMsg = document.getElementById("noRoomMsg");
+    const noRoom = document.getElementById("noRoomMsg");
+    const badge = document.getElementById("roomCountBadge");
+
     ul.innerHTML = "";
+    badge.innerText = rooms.length;
 
     if (rooms.length === 0) {
-        noRoomMsg.style.display = "block";
+        noRoom.style.display = "block";
         return;
     }
 
-    noRoomMsg.style.display = "none";
+    noRoom.style.display = "none";
 
     rooms.forEach((room) => {
         const li = document.createElement("li");
@@ -211,7 +188,7 @@ socket.on("roomList", (rooms) => {
 
         const btn = document.createElement("button");
         const isFull = room.players >= 2;
-        btn.className = "room-join-btn" + (isFull ? " full" : "");
+        btn.className = "room-join-btn";
         btn.innerText = isFull ? "ĐẦY" : "Vô";
         btn.disabled = isFull || !!currentRoom;
 
@@ -219,8 +196,12 @@ socket.on("roomList", (rooms) => {
             btn.onclick = () => {
                 const nameInput = document.getElementById("name");
                 if (!nameInput.value.trim()) {
-                    alert("Nhập tên trước");
                     nameInput.focus();
+                    nameInput.placeholder = "Nhập tên trước! ⚠️";
+                    setTimeout(
+                        () => (nameInput.placeholder = "Nhập nickname..."),
+                        2000,
+                    );
                     return;
                 }
                 joinRoom(room.id);
@@ -246,17 +227,15 @@ socket.on("state", (room) => {
     if (me) document.getElementById("myName").innerText = me.name;
     if (enemy) document.getElementById("enemyName").innerText = enemy.name;
 
-    const statusEl = document.getElementById("log");
-    if (room.players.length < 2) {
-        statusEl.innerText = "⏳ Đang chờ đối thủ vào phòng...";
-    } else {
-        statusEl.innerText = room.log || "Game đang chạy";
-    }
+    const logEl = document.getElementById("log");
+    logEl.innerText =
+        room.players.length < 2
+            ? "⏳ Chờ đối thủ vào phòng..."
+            : room.log || "Game đang chạy";
 
-    const timerVal = room.timer;
     document.getElementById("timer").innerText =
-        room.players.length < 2 ? "—" : timerVal;
-    updateTimerUrgency(timerVal);
+        room.players.length < 2 ? "—" : room.timer;
+    updateTimerUrgency(room.timer);
 
     document.getElementById("bullets").innerText = me ? me.bullets : "0";
     document.getElementById("shieldStreak").innerText = me
@@ -283,28 +262,25 @@ socket.on("state", (room) => {
     hideResult();
 
     if (me && me.dead) {
-        showResult("💀 Thua!", "lose");
+        showResult("💀 THUA!", "lose");
         disableButtons(true);
+        return;
     }
 
     if (enemy && enemy.dead) {
-        showResult("🏆 Thắng!", "win");
+        showResult("🏆 THẮNG!", "win");
         disableButtons(true);
+        return;
     }
 
     if (me && me.action === null && !me.dead && room.players.length === 2) {
         disableButtons(false);
     }
 
-    if (me && me.bullets < 1) {
+    if (me && me.bullets < 1)
         document.getElementById("shootBtn").disabled = true;
-    }
-
-    if (me && me.bullets >= settings.maxBullets) {
+    if (me && me.bullets >= settings.maxBullets)
         document.getElementById("reloadBtn").disabled = true;
-    }
-
-    if (me && me.shieldStreak >= settings.maxShieldStreak) {
+    if (me && me.shieldStreak >= settings.maxShieldStreak)
         document.getElementById("shieldBtn").disabled = true;
-    }
 });

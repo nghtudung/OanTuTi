@@ -8,11 +8,36 @@ const io = new Server(server);
 
 app.use(express.static("public"));
 
-const MAX_BULLETS = 3;
-const MAX_SHIELD_STREAK = 5;
+const DEFAULT_SETTINGS = {
+    maxBullets: 3,
+    maxShieldStreak: 5,
+};
 const PORT = 3000;
 
 const rooms = {};
+
+function clampInt(value, fallback, min, max) {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(Math.max(parsed, min), max);
+}
+
+function normalizeSettings(settings = {}, fallback = DEFAULT_SETTINGS) {
+    return {
+        maxBullets: clampInt(
+            settings.maxBullets,
+            fallback.maxBullets,
+            1,
+            99,
+        ),
+        maxShieldStreak: clampInt(
+            settings.maxShieldStreak,
+            fallback.maxShieldStreak,
+            1,
+            99,
+        ),
+    };
+}
 
 function getRoomList() {
     return Object.entries(rooms).map(([id, room]) => ({
@@ -22,6 +47,7 @@ function getRoomList() {
 }
 
 function resetRoom(room) {
+    room.settings = normalizeSettings(room.settings);
     room.players.forEach((p) => {
         p.bullets = 0;
         p.dead = false;
@@ -34,13 +60,20 @@ function resetRoom(room) {
 
 function resolveTurn(room) {
     const [p1, p2] = room.players;
+    const settings = normalizeSettings(room.settings);
     let log = "";
 
     if (p1.action === "shoot" && p1.bullets === 0) p1.action = "none";
     if (p2.action === "shoot" && p2.bullets === 0) p2.action = "none";
+    if (p1.action === "shield" && p1.shieldStreak >= settings.maxShieldStreak)
+        p1.action = "none";
+    if (p2.action === "shield" && p2.shieldStreak >= settings.maxShieldStreak)
+        p2.action = "none";
 
-    if (p1.action === "reload" && p1.bullets < MAX_BULLETS) p1.bullets++;
-    if (p2.action === "reload" && p2.bullets < MAX_BULLETS) p2.bullets++;
+    if (p1.action === "reload" && p1.bullets < settings.maxBullets)
+        p1.bullets++;
+    if (p2.action === "reload" && p2.bullets < settings.maxBullets)
+        p2.bullets++;
 
     if (p1.action === "shoot") p1.bullets--;
     if (p2.action === "shoot") p2.bullets--;
@@ -91,16 +124,18 @@ setInterval(() => {
 io.on("connection", (socket) => {
     socket.emit("roomList", getRoomList());
 
-    socket.on("joinRoom", ({ roomId, name }) => {
+    socket.on("joinRoom", ({ roomId, name, settings }) => {
         if (!rooms[roomId]) {
             rooms[roomId] = {
                 players: [],
                 log: "Đang chờ...",
                 timer: 10,
+                settings: normalizeSettings(settings),
             };
         }
 
         const room = rooms[roomId];
+        room.settings = normalizeSettings(room.settings);
 
         if (room.players.length >= 2) {
             socket.emit("message", "Hết slot");
@@ -128,6 +163,7 @@ io.on("connection", (socket) => {
 
         const player = room.players.find((p) => p.id === socket.id);
         if (!player || player.action || player.dead) return;
+        if (!["shoot", "shield", "reload"].includes(action)) return;
 
         player.action = action;
 
@@ -138,13 +174,16 @@ io.on("connection", (socket) => {
         io.to(roomId).emit("state", room);
     });
 
-    socket.on("restart", (roomId) => {
+    socket.on("restart", (payload) => {
+        const roomId = typeof payload === "string" ? payload : payload?.roomId;
         const room = rooms[roomId];
         if (!room) return;
+        if (payload && typeof payload === "object" && payload.settings) {
+            room.settings = normalizeSettings(payload.settings, room.settings);
+        }
         resetRoom(room);
         io.to(roomId).emit("state", room);
     });
-
 
     socket.on("leaveRoom", (roomId) => {
         const room = rooms[roomId];

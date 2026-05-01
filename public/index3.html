@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <title>Oẳn Tù Tì VJP PRO</title>
+        <link rel="stylesheet" href="style3.css" />
+    </head>
+    <body>
+        <header class="topbar">
+            <h1 class="logo">OẲN TÙ TÌ <span>VJP</span></h1>
+            <button
+                class="theme-toggle"
+                id="themeToggle"
+                onclick="toggleTheme()"
+            >
+                <span id="themeIcon">☀️</span>
+            </button>
+        </header>
+
+        <div id="lobbyView" class="view">
+            <div class="lobby-name-block">
+                <label class="field-label">Tên của bạn</label>
+                <input
+                    id="name"
+                    class="big-input"
+                    placeholder="Nhập nickname..."
+                    maxlength="20"
+                />
+            </div>
+
+            <div class="lobby-section">
+                <div class="section-header">
+                    <span>Danh sách phòng</span>
+                    <span class="room-count-badge" id="roomCountBadge">0</span>
+                </div>
+                <div id="noRoomMsg" class="no-room" style="display: none">
+                    Chưa có phòng nào 👻
+                </div>
+                <ul id="rooms" class="room-list"></ul>
+            </div>
+
+            <div class="lobby-manual">
+                <label class="field-label">Tạo / nhập mã phòng</label>
+                <div class="settings-grid">
+                    <label>
+                        Đạn tối đa
+                        <input
+                            data-setting="maxBullets"
+                            class="big-input"
+                            type="number"
+                            min="1"
+                            max="99"
+                            value="3"
+                        />
+                    </label>
+                    <label>
+                        Khiên tối đa
+                        <input
+                            data-setting="maxShieldStreak"
+                            class="big-input"
+                            type="number"
+                            min="1"
+                            max="99"
+                            value="5"
+                        />
+                    </label>
+                </div>
+                <div class="manual-row">
+                    <input
+                        id="roomId"
+                        class="big-input"
+                        placeholder="Mã phòng..."
+                    />
+                    <button
+                        id="joinRoomBtn"
+                        class="btn-primary"
+                        onclick="joinRoom()"
+                    >
+                        Vô
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameView" class="view" style="display: none">
+            <div class="log-bar">
+                <span id="log">Chờ đối thủ...</span>
+            </div>
+
+            <div class="player-zone enemy-zone">
+                <div class="pz-indicator" id="enemyStatus">💬</div>
+                <div class="pz-stats">
+                    <span class="stat-pill"
+                        >🔫 <strong id="enemyBullets">0</strong></span
+                    >
+                    <span class="stat-pill"
+                        >🛡️ <strong id="enemyShieldStreak">0</strong></span
+                    >
+                </div>
+                <div class="pz-name" id="enemyName">???</div>
+            </div>
+
+            <div class="center-block">
+                <div id="timerWrap" class="timer-wrap">
+                    <div id="gameSettingsInfo" class="game-settings-info">
+                        Đạn tối đa 3 | Khiên tối đa 5
+                    </div>
+                    <div class="timer-label">THỜI GIAN CÒN LẠI</div>
+                    <div class="timer-number" id="timer">—</div>
+                    <div class="vs-badge">VS</div>
+                </div>
+                <div
+                    class="game-result"
+                    id="result"
+                    style="display: none"
+                ></div>
+            </div>
+
+            <div class="player-zone my-zone">
+                <div class="pz-name" id="myName">Bạn</div>
+                <div class="pz-stats">
+                    <span class="stat-pill"
+                        >🔫 <strong id="bullets">0</strong></span
+                    >
+                    <span class="stat-pill"
+                        >🛡️ <strong id="shieldStreak">0</strong></span
+                    >
+                </div>
+                <div class="pz-indicator" id="myStatus">💬</div>
+            </div>
+
+            <div class="action-row">
+                <button
+                    id="reloadBtn"
+                    class="action-btn reload"
+                    onclick="sendAction('reload')"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <polyline points="23 4 23 10 17 10" />
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                    </svg>
+                    <span>Nạp</span>
+                </button>
+                <button
+                    id="shootBtn"
+                    class="action-btn shoot"
+                    onclick="sendAction('shoot')"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M4 9h10l2-4h3v8h-3l-2-4H4V9z" />
+                        <rect x="1" y="8" width="3" height="6" rx="1" />
+                        <circle cx="19" cy="17" r="2" />
+                    </svg>
+                    <span>Bắn</span>
+                </button>
+                <button
+                    id="shieldBtn"
+                    class="action-btn shield"
+                    onclick="sendAction('shield')"
+                >
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2L3 7v6c0 5.25 3.75 10.15 9 11.25C17.25 23.15 21 18.25 21 13V7l-9-5z"
+                        />
+                    </svg>
+                    <span>Khiên</span>
+                </button>
+            </div>
+
+            <div class="game-footer">
+                <div class="settings-grid in-game">
+                    <label>
+                        Đạn
+                        <input
+                            data-setting="maxBullets"
+                            class="big-input"
+                            type="number"
+                            min="1"
+                            max="99"
+                            value="3"
+                        />
+                    </label>
+                    <label>
+                        Khiên
+                        <input
+                            data-setting="maxShieldStreak"
+                            class="big-input"
+                            type="number"
+                            min="1"
+                            max="99"
+                            value="5"
+                        />
+                    </label>
+                </div>
+                <button class="ctrl-btn" onclick="restartGame()">
+                    ↺ Ván mới
+                </button>
+                <button class="ctrl-btn danger" onclick="leaveRoom()">
+                    ✕ Rời
+                </button>
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="script3.js"></script>
+    </body>
+</html>

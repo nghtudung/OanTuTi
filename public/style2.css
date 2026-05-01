@@ -314,6 +314,18 @@ body {
     color: var(--text-dim);
 }
 
+.game-settings-info {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-bottom: 4px;
+    background: var(--surface2);
+}
+
 .timer-number {
     font-family: var(--font-display);
     font-size: clamp(5rem, 14vw, 9rem);
@@ -595,6 +607,22 @@ kbd {
     letter-spacing: 0.1em;
     color: var(--text-dim);
     margin-bottom: 10px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.settings-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-muted);
 }
 
 .manual-row {
