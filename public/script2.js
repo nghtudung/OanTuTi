@@ -283,12 +283,12 @@ socket.on("state", (room) => {
     hideResult();
 
     if (me && me.dead) {
-        showResult("💀 Thua!", "lose");
+        showResult("💀 THUA!", "lose");
         disableButtons(true);
     }
 
     if (enemy && enemy.dead) {
-        showResult("🏆 Thắng!", "win");
+        showResult("🏆 THẮNG!", "win");
         disableButtons(true);
     }
 
